@@ -3,7 +3,7 @@
 > **Digital Marketing Executive & Team Leader** at ScaleUP Ads Agency  
 > Specializing in Performance Marketing, Analytics, and ROI-focused Growth
 
-[![Live Demo](https://img.shields.io/badge/Live-Demo-blue?style=for-the-badge)](http://localhost:5173/)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-blue?style=for-the-badge)](https://tanvir-hossain-portfolio.vercel.app/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 [![Vite](https://img.shields.io/badge/Built%20with-Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
 
