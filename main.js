@@ -1,3 +1,9 @@
+// Import Vercel Analytics
+import { inject } from '@vercel/analytics';
+
+// Initialize Vercel Web Analytics
+inject();
+
 // Comprehensive interactivity for MD. Tanvir Hossain Portfolio
 document.addEventListener('DOMContentLoaded', () => {
   // --- Mobile Menu Logic ---
