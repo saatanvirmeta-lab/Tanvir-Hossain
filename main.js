@@ -1,248 +1,241 @@
-// Comprehensive interactivity for MD. Tanvir Hossain Portfolio
-document.addEventListener('DOMContentLoaded', () => {
-  // --- Mobile Menu Logic ---
-  const menuToggle = document.getElementById('menu-toggle');
-  const navLinks = document.getElementById('nav-links');
-  const links = document.querySelectorAll('.nav-links a');
+// ─────────────────────────────────────────────
+//  main.js — Tanvir Hossain Portfolio
+// ─────────────────────────────────────────────
 
-  if (menuToggle && navLinks) {
-    menuToggle.addEventListener('click', () => {
-      menuToggle.classList.toggle('active');
-      navLinks.classList.toggle('active');
-      document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : '';
-    });
+// ── Section → URL mapping ───────────────────
+const sectionRoutes = {
+  'hero':       '/',
+  'projects':   '/case-studies',
+  'about':      '/about',
+  'experience': '/experience',
+  'skills':     '/skills',
+  'services':   '/services',
+  'process':    '/process',
+  'faq':        '/faq',
+  'contact':    '/contact',
+};
 
-    // Close menu when a link is clicked
-    links.forEach(link => {
-      link.addEventListener('click', () => {
-        menuToggle.classList.remove('active');
-        navLinks.classList.remove('active');
-        document.body.style.overflow = '';
-      });
-    });
+// Reverse map: URL path → section id
+const routeSections = Object.fromEntries(
+  Object.entries(sectionRoutes).map(([id, path]) => [path, id])
+);
+
+// ── Update URL without reload ─────────────────
+function updateURL(sectionId) {
+  const path = sectionRoutes[sectionId] || '/';
+  if (window.location.pathname !== path) {
+    window.history.pushState({ sectionId }, '', path);
   }
+}
 
-  // --- Smooth Scroll ---
-  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
+// ── IntersectionObserver — watch sections ────
+function initScrollURLUpdate() {
+  const sections = document.querySelectorAll('section[id]');
+  if (!sections.length) return;
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          updateURL(entry.target.id);
+          updateActiveNavLink(entry.target.id);
+        }
+      });
+    },
+    {
+      threshold: 0.35, // section must be 35% visible
+    }
+  );
+
+  sections.forEach((section) => observer.observe(section));
+}
+
+// ── Active nav link highlight ─────────────────
+function updateActiveNavLink(sectionId) {
+  const path = sectionRoutes[sectionId] || '/';
+  document.querySelectorAll('.nav-links a').forEach((link) => {
+    link.classList.remove('nav-active');
+    const href = link.getAttribute('href');
+    // match both #id style and /path style hrefs
+    if (
+      href === '#' + sectionId ||
+      href === path ||
+      (sectionId === 'hero' && (href === '#hero' || href === '/'))
+    ) {
+      link.classList.add('nav-active');
+    }
+  });
+}
+
+// ── Nav link click → scroll + URL update ─────
+function initNavClicks() {
+  document.querySelectorAll('.nav-links a[href^="#"]').forEach((link) => {
+    link.addEventListener('click', (e) => {
       e.preventDefault();
-      const targetId = this.getAttribute('href');
-      if (targetId === '#') return;
-
-      const target = document.querySelector(targetId);
+      const targetId = link.getAttribute('href').replace('#', '');
+      const target = document.getElementById(targetId);
       if (target) {
-        window.scrollTo({
-          top: target.offsetTop - 80,
-          behavior: 'smooth'
-        });
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        updateURL(targetId);
+        updateActiveNavLink(targetId);
+        // close mobile menu if open
+        const navLinks = document.getElementById('nav-links');
+        if (navLinks) navLinks.classList.remove('open');
       }
     });
   });
+}
 
-  // --- Premium Reveal Animations ---
-  const observerOptions = {
-    threshold: 0.15,
-    rootMargin: '0px 0px -50px 0px'
-  };
+// ── Handle direct URL visit ───────────────────
+// e.g. user visits /about directly → scroll to #about
+function handleDirectURLVisit() {
+  const path = window.location.pathname;
+  if (path === '/' || path === '') return;
 
-  const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('revealed');
-        revealObserver.unobserve(entry.target);
+  const sectionId = routeSections[path];
+  if (sectionId) {
+    // Wait for DOM to fully render, then scroll
+    setTimeout(() => {
+      const target = document.getElementById(sectionId);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        updateActiveNavLink(sectionId);
       }
-    });
-  }, observerOptions);
+    }, 100);
+  }
+}
 
-  // Apply basic reveal styles via JS to avoid flicker
-  const revealElements = document.querySelectorAll('.card, .section-title, .hero-text, .hero-actions, .stats-grid, .about-visual, .about-content, .skill-category, .stat-item, .contact-card, .step-card, .faq-item');
+// ── Handle browser back/forward buttons ───────
+window.addEventListener('popstate', (e) => {
+  const path = window.location.pathname;
+  const sectionId = routeSections[path] || 'hero';
+  const target = document.getElementById(sectionId);
+  if (target) {
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    updateActiveNavLink(sectionId);
+  }
+});
 
-  revealElements.forEach((el) => {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(30px)';
-    el.style.transition = 'all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1)';
-    revealObserver.observe(el);
+// ── Mobile menu toggle ────────────────────────
+function initMobileMenu() {
+  const toggle = document.getElementById('menu-toggle');
+  const navLinks = document.getElementById('nav-links');
+  if (!toggle || !navLinks) return;
+
+  toggle.addEventListener('click', () => {
+    navLinks.classList.toggle('open');
+    toggle.classList.toggle('active');
   });
 
-  // Staggering logic for grids
-  const staggeredGrids = ['.services-grid', '.stats-grid', '.skills-grid', '.contact-methods', '.sub-projects-grid', '.process-steps', '.testimonials-grid', '.faq-list'];
-  staggeredGrids.forEach(gridSelector => {
-    const grid = document.querySelector(gridSelector);
-    if (grid) {
-      const items = grid.children;
-      Array.from(items).forEach((item, index) => {
-        item.style.transitionDelay = `${index * 0.1}s`;
-      });
+  // Close on outside click
+  document.addEventListener('click', (e) => {
+    if (!toggle.contains(e.target) && !navLinks.contains(e.target)) {
+      navLinks.classList.remove('open');
+      toggle.classList.remove('active');
     }
   });
+}
 
-  // Add global styles for the revealed state
-  const style = document.createElement('style');
-  style.innerHTML = `
-    .revealed {
-      opacity: 1 !important;
-      transform: translateY(0) !important;
-    }
-    .nav-links a.active {
-      color: var(--text-primary);
-    }
-  `;
-  document.head.appendChild(style);
+// ── Modal (Case Studies) ──────────────────────
+function initModal() {
+  const modal   = document.getElementById('project-modal');
+  const closeBtn = document.querySelector('.modal-close');
+  if (!modal) return;
 
-  // --- Active Nav Link on Scroll ---
-  const sections = document.querySelectorAll('section');
-  window.addEventListener('scroll', () => {
-    let current = '';
-    sections.forEach(section => {
-      const sectionTop = section.offsetTop;
-      const sectionHeight = section.clientHeight;
-      if (window.scrollY >= (sectionTop - 150)) {
-        current = section.getAttribute('id');
-      }
-    });
+  document.querySelectorAll('.featured-project').forEach((card) => {
+    card.addEventListener('click', () => {
+      const title   = card.dataset.title  || '';
+      const imgSrc  = card.dataset.image  || '';
+      const stat1   = card.dataset.stat1  || '';
+      const stat2   = card.dataset.stat2  || '';
+      const stat3   = card.dataset.stat3  || '';
 
-    links.forEach(link => {
-      link.classList.remove('active');
-      if (link.getAttribute('href').includes(current)) {
-        link.classList.add('active');
-      }
-    });
-  });
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-image').src = imgSrc;
 
-  // --- Animated Stats Counter ---
-  const statsSection = document.querySelector('.stats');
-  const statValues = document.querySelectorAll('.stat-value');
-  let started = false;
-
-  function startCount(el) {
-    const target = parseFloat(el.getAttribute('data-target'));
-    const isFloat = target % 1 !== 0;
-    const duration = 2000;
-    const step = 20;
-    const steps = duration / step;
-    const increment = target / steps;
-    let current = 0;
-
-    const timer = setInterval(() => {
-      current += increment;
-      if (current >= target) {
-        current = target;
-        clearInterval(timer);
-      }
-
-      if (isFloat) {
-        el.innerText = current.toFixed(2);
+      // Pull rich content from hidden div inside card
+      const richContent = card.querySelector('.modal-source-content');
+      const descEl = document.getElementById('modal-desc');
+      if (richContent) {
+        descEl.innerHTML = richContent.innerHTML;
       } else {
-        el.innerText = Math.floor(current);
+        descEl.textContent = card.dataset.desc || '';
       }
-    }, step);
-  }
 
-  const statsObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting && !started) {
-        statValues.forEach(el => startCount(el));
-        started = true;
-      }
+      // Stats
+      const statsEl = document.getElementById('modal-stats');
+      statsEl.innerHTML = [stat1, stat2, stat3]
+        .filter(Boolean)
+        .map((s) => {
+          const [val, ...lblParts] = s.split(' ');
+          return `<div class="p-stat"><span class="val">${val}</span><span class="lbl">${lblParts.join(' ')}</span></div>`;
+        })
+        .join('');
+
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
     });
-  }, { threshold: 0.5 });
-
-  if (statsSection) {
-    statsObserver.observe(statsSection);
-  }
-
-  // --- Hero Parallax Effect ---
-  const heroSection = document.querySelector('.hero');
-  const heroVisual = document.querySelector('.hero-image-container');
-
-  if (heroSection && heroVisual) {
-    heroSection.addEventListener('mousemove', (e) => {
-      const x = (window.innerWidth - e.pageX * 2) / 50;
-      const y = (window.innerHeight - e.pageY * 2) / 50;
-
-      heroVisual.style.transform = `translateX(${x}px) translateY(${y}px)`;
-    });
-
-    heroSection.addEventListener('mouseleave', () => {
-      heroVisual.style.transform = `translateX(0) translateY(0)`;
-    });
-  }
-
-  // --- Project Modal Logic ---
-  const modal = document.getElementById('project-modal');
-  const modalClose = document.querySelector('.modal-close');
-  const modalTitle = document.getElementById('modal-title');
-  const modalDesc = document.getElementById('modal-desc');
-  const modalImage = document.getElementById('modal-image');
-  const modalStats = document.getElementById('modal-stats');
-  const projectCards = document.querySelectorAll('.card[data-title]');
-
-  function openModal(card) {
-    if (!modal) return;
-
-    // Get the hidden detailed content from the card
-    const detailedContent = card.querySelector('.modal-source-content');
-
-    // Populate Data
-    modalTitle.textContent = card.dataset.title;
-    modalImage.src = card.dataset.image;
-
-    // If detailed content exists, use it; otherwise fall back to basic description
-    if (detailedContent) {
-      modalDesc.innerHTML = detailedContent.innerHTML;
-    } else {
-      modalDesc.textContent = card.dataset.desc;
-    }
-
-    // Stats HTML builder
-    let statsHtml = '';
-    if (card.dataset.stat1) statsHtml += `<div class="p-stat"><span class="val">${card.dataset.stat1.split(' ')[0]}</span><span class="lbl">${card.dataset.stat1.split(' ').slice(1).join(' ')}</span></div>`;
-    if (card.dataset.stat2) statsHtml += `<div class="p-stat"><span class="val">${card.dataset.stat2.split(' ')[0]}</span><span class="lbl">${card.dataset.stat2.split(' ').slice(1).join(' ')}</span></div>`;
-    if (card.dataset.stat3) statsHtml += `<div class="p-stat"><span class="val">${card.dataset.stat3.split(' ')[0]}</span><span class="lbl">${card.dataset.stat3.split(' ').slice(1).join(' ')}</span></div>`;
-
-    modalStats.innerHTML = statsHtml;
-
-    // Show
-    modal.classList.add('active');
-    document.body.style.overflow = 'hidden'; // Prevent background scrolling
-  }
+  });
 
   function closeModal() {
-    if (!modal) return;
-    modal.classList.remove('active');
+    modal.classList.remove('open');
     document.body.style.overflow = '';
   }
 
-  projectCards.forEach(card => {
-    card.addEventListener('click', () => openModal(card));
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
   });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeModal();
+  });
+}
 
-  if (modalClose) {
-    modalClose.addEventListener('click', closeModal);
-  }
+// ── Testimonials auto-scroll ──────────────────
+function initTestimonials() {
+  const track = document.querySelector('.testimonials-track');
+  if (!track) return;
 
-  // Close on outside click
-  if (modal) {
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) closeModal();
-    });
+  // Duplicate cards for infinite loop
+  const cards = track.querySelectorAll('.testimonial-card');
+  cards.forEach((card) => {
+    const clone = card.cloneNode(true);
+    track.appendChild(clone);
+  });
+}
 
-    // Close on Escape
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && modal.classList.contains('active')) {
-        closeModal();
-      }
-    });
-  }
+// ── Scroll-reveal animation ───────────────────
+function initScrollReveal() {
+  const revealEls = document.querySelectorAll(
+    '.card, .timeline-item, .step-card, .skill-category, .faq-item'
+  );
+  if (!revealEls.length) return;
 
-  // --- Infinite Testimonial Scroll Clone ---
-  const testimonialTrack = document.querySelector('.testimonials-track');
-  if (testimonialTrack) {
-    const testimonialCards = Array.from(testimonialTrack.children);
-    testimonialCards.forEach(card => {
-      const clone = card.cloneNode(true);
-      testimonialTrack.appendChild(clone);
-    });
-  }
+  const revealObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.1 }
+  );
 
+  revealEls.forEach((el) => {
+    el.classList.add('reveal-on-scroll');
+    revealObserver.observe(el);
+  });
+}
+
+// ── Init everything on DOM ready ──────────────
+document.addEventListener('DOMContentLoaded', () => {
+  initNavClicks();
+  initScrollURLUpdate();
+  handleDirectURLVisit();
+  initMobileMenu();
+  initModal();
+  initTestimonials();
+  initScrollReveal();
 });
