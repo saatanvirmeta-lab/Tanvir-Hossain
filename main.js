@@ -142,6 +142,11 @@ function initModal() {
   const closeBtn = document.querySelector('.modal-close');
   if (!modal) return;
 
+  // Remembers where the user was scrolled to before opening the modal,
+  // so we can safely lock background scroll and restore position on close.
+  // (Fixes the "page freezes / won't scroll" bug on mobile Safari & Chrome)
+  let savedScrollY = 0;
+
   document.querySelectorAll('.featured-project').forEach((card) => {
     card.addEventListener('click', () => {
       const title   = card.dataset.title  || '';
@@ -172,14 +177,25 @@ function initModal() {
         })
         .join('');
 
+      // Open modal + safe scroll-lock (prevents iOS/Android freeze bug)
+      savedScrollY = window.pageYOffset || document.documentElement.scrollTop;
       modal.classList.add('open');
-      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${savedScrollY}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+      document.body.style.width = '100%';
     });
   });
 
   function closeModal() {
     modal.classList.remove('open');
-    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+    window.scrollTo(0, savedScrollY);
   }
 
   if (closeBtn) closeBtn.addEventListener('click', closeModal);
