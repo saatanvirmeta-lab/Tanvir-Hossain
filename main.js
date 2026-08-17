@@ -426,30 +426,40 @@ function initBookingForm() {
 
     if (!isValid) return;
 
-    // Submit to Formspree (replace BOOKING_FORM_ENDPOINT with your real endpoint)
-    const BOOKING_FORM_ENDPOINT = 'https://formspree.io/f/YOUR_FORM_ID';
-    const payload = {
-      name: nameVal,
-      country: countryField.value,
-      phone: phoneField.value.trim(),
-      email: emailVal,
-      website: document.getElementById('f-website').value.trim(),
-      ad_spend: spendField.value,
-      creatives: creativesField.value,
-      best_time: timeField.value.trim(),
-    };
+    // Submit lead to Supabase
+const payload = {
+  name: nameVal,
+  country: countryField.value,
+  phone: phoneField.value.trim(),
+  email: emailVal,
+  website: document.getElementById('f-website').value.trim(),
+  ad_spend: spendField.value,
+  creatives: creativesField.value,
+  best_time: timeField.value.trim(),
+};
 
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Sending...';
+submitBtn.disabled = true;
+submitBtn.textContent = 'Sending...';
 
-    try {
-      const response = await fetch(BOOKING_FORM_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify(payload),
-      });
+try {
+  const { data, error } = await supabaseClient
+    .from("Tanvir's Site")
+    .insert([payload])
+    .select();
 
-      if (!response.ok) throw new Error('Submission failed');
+  if (error) {
+    console.error('Supabase error:', error);
+    throw new Error('Submission failed');
+  }
+
+     if (error) {
+  console.error('Supabase error:', error);
+  throw new Error('Submission failed');
+}
+
+// এখানে সরাসরি এগুলো থাকবে
+form.style.display = 'none';
+document.getElementById('thank-you-box').style.display = 'block';
 
       form.style.display = 'none';
       document.getElementById('thank-you-box').style.display = 'block';
