@@ -236,7 +236,9 @@ nav {
 
 .hero-actions {
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
 }
 
 .cta-group {
@@ -1176,7 +1178,9 @@ section {
 
 .hero-actions {
   display: flex;
-  justify-content: flex-start;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
 }
 
 .faq-list {
@@ -1334,7 +1338,7 @@ section {
   }
 
   .hero-actions {
-    justify-content: center;
+    align-items: center;
     width: 100%;
   }
 
