@@ -241,7 +241,9 @@ nav {
 
 .cta-group {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 20px;
 }
 
@@ -382,6 +384,31 @@ nav {
 .btn-secondary:hover {
   background: rgba(255, 255, 255, 0.1);
   transform: translateY(-2px);
+}
+
+.btn-glass {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+}
+
+.btn-glass:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--accent-color);
+  transform: translateY(-2px);
+}
+
+.btn-rounded {
+  border-radius: 100px;
+  padding: 14px 36px;
+}
+
+.btn-lg {
+  padding: 18px 48px;
+  font-size: 1.1rem;
+  border-radius: 100px;
 }
 
 /* Stats */
