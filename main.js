@@ -1,3 +1,16 @@
+// ── Supabase Configuration ──────────────────────
+const SUPABASE_URL = 'https://afobfufufrlurmmsutyd.supabase.co';
+
+const SUPABASE_PUBLISHABLE_KEY =
+  'sb_publishable_xLFi3s67N54mUYgZoC3qSQ_ZPJ74lku';
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
+
+
+// তোমার আগের main.js code এখান থেকে শুরু হবে
 // ─────────────────────────────────────────────
 //  main.js — Tanvir Hossain Portfolio
 // ─────────────────────────────────────────────
