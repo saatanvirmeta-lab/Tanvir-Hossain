@@ -442,10 +442,9 @@ submitBtn.disabled = true;
 submitBtn.textContent = 'Sending...';
 
 try {
-  const { data, error } = await supabaseClient
-    .from("Tanvir's Site")
-    .insert([payload])
-    .select();
+const { error } = await supabaseClient
+  .from("Tanvir's Site")
+  .insert([payload]);
 
   if (error) {
     console.error('Supabase error:', error);
