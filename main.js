@@ -245,6 +245,210 @@ function initScrollReveal() {
   });
 }
 
+// ── Book Now buttons → scroll to booking form ─
+function initBookNowTriggers() {
+  const target = document.getElementById('book-now-form');
+  if (!target) return;
+
+  document.querySelectorAll('.book-now-trigger').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+
+      // If a case-study modal is open, close it first
+      const modal = document.getElementById('project-modal');
+      if (modal && modal.classList.contains('open')) {
+        modal.classList.remove('open');
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.left = '';
+        document.body.style.right = '';
+        document.body.style.width = '';
+      }
+
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      setTimeout(() => {
+        const nameField = document.getElementById('f-name');
+        if (nameField) nameField.focus({ preventScroll: true });
+      }, 500);
+    });
+  });
+}
+
+// ── Booking form: phone rules per country ─────
+const PHONE_RULES = {
+  bd: { min: 10, max: 13, hint: 'e.g. 01XXXXXXXXX or +8801XXXXXXXXX' },
+  us: { min: 10, max: 11, hint: 'e.g. (XXX) XXX-XXXX or +1XXXXXXXXXX' },
+  ca: { min: 10, max: 11, hint: 'e.g. (XXX) XXX-XXXX or +1XXXXXXXXXX' },
+  uk: { min: 10, max: 12, hint: 'e.g. 07XXX XXXXXX or +44XXXXXXXXXX' },
+  au: { min: 9, max: 11, hint: 'e.g. 04XX XXX XXX or +61XXXXXXXXX' },
+  other: { min: 7, max: 15, hint: 'Include your country code' },
+};
+
+// Email patterns that indicate a fake/test entry
+const FAKE_EMAIL_LOCAL_PARTS = /^(test|testmail|test123|testing|demo|sample|fake|dummy|asdf|xxx+|abc123?|noone|nobody|none|na)\d*$/i;
+const DISPOSABLE_EMAIL_DOMAINS = ['example.com', 'test.com', 'mailinator.com', 'yopmail.com', 'tempmail.com', 'fake.com'];
+
+function showFieldError(fieldEl, errorEl, message) {
+  fieldEl.classList.add('invalid');
+  if (errorEl) {
+    errorEl.textContent = message;
+    errorEl.classList.add('show');
+  }
+}
+
+function clearFieldError(fieldEl, errorEl) {
+  fieldEl.classList.remove('invalid');
+  if (errorEl) {
+    errorEl.textContent = '';
+    errorEl.classList.remove('show');
+  }
+}
+
+function initBookingForm() {
+  const form = document.getElementById('booking-form');
+  if (!form) return;
+
+  const countryField = document.getElementById('f-country');
+  const phoneField = document.getElementById('f-phone');
+  const phoneHint = document.getElementById('hint-phone');
+  const submitNote = document.getElementById('form-submit-note');
+  const submitBtn = document.getElementById('booking-submit-btn');
+
+  // Update phone hint + placeholder whenever country changes
+  countryField.addEventListener('change', () => {
+    const rule = PHONE_RULES[countryField.value];
+    if (rule) {
+      phoneHint.textContent = rule.hint;
+      phoneField.placeholder = rule.hint;
+    }
+    clearFieldError(countryField, document.getElementById('err-country'));
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    submitNote.classList.remove('show');
+
+    let isValid = true;
+
+    // Name
+    const nameField = document.getElementById('f-name');
+    const nameVal = nameField.value.trim();
+    if (nameVal.length < 2) {
+      showFieldError(nameField, document.getElementById('err-name'), 'Please enter your full name.');
+      isValid = false;
+    } else {
+      clearFieldError(nameField, document.getElementById('err-name'));
+    }
+
+    // Country
+    if (!countryField.value) {
+      showFieldError(countryField, document.getElementById('err-country'), 'Please select your country.');
+      isValid = false;
+    } else {
+      clearFieldError(countryField, document.getElementById('err-country'));
+    }
+
+    // Phone — digit count must match the normal length for the selected country
+    const digitsOnly = phoneField.value.replace(/\D/g, '');
+    const rule = PHONE_RULES[countryField.value] || PHONE_RULES.other;
+    if (digitsOnly.length < rule.min || digitsOnly.length > rule.max) {
+      showFieldError(
+        phoneField,
+        document.getElementById('err-phone'),
+        `Please enter a valid phone number (${rule.hint}).`
+      );
+      isValid = false;
+    } else {
+      clearFieldError(phoneField, document.getElementById('err-phone'));
+    }
+
+    // Email — format + block obvious test/fake addresses
+    const emailField = document.getElementById('f-email');
+    const emailVal = emailField.value.trim();
+    const emailErrorEl = document.getElementById('err-email');
+    const basicEmailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!basicEmailPattern.test(emailVal)) {
+      showFieldError(emailField, emailErrorEl, 'Please enter a valid email address.');
+      isValid = false;
+    } else {
+      const [localPart, domainPart] = emailVal.split('@');
+      if (
+        FAKE_EMAIL_LOCAL_PARTS.test(localPart) ||
+        DISPOSABLE_EMAIL_DOMAINS.includes(domainPart.toLowerCase())
+      ) {
+        showFieldError(emailField, emailErrorEl, 'Please enter a real email address we can reach you on.');
+        isValid = false;
+      } else {
+        clearFieldError(emailField, emailErrorEl);
+      }
+    }
+
+    // Ad spend
+    const spendField = document.getElementById('f-spend');
+    if (!spendField.value) {
+      showFieldError(spendField, document.getElementById('err-spend'), 'Please select your current ad spend.');
+      isValid = false;
+    } else {
+      clearFieldError(spendField, document.getElementById('err-spend'));
+    }
+
+    // Creatives
+    const creativesField = document.getElementById('f-creatives');
+    if (!creativesField.value) {
+      showFieldError(creativesField, document.getElementById('err-creatives'), 'Please select an option.');
+      isValid = false;
+    } else {
+      clearFieldError(creativesField, document.getElementById('err-creatives'));
+    }
+
+    // Best time
+    const timeField = document.getElementById('f-time');
+    if (timeField.value.trim().length < 3) {
+      showFieldError(timeField, document.getElementById('err-time'), 'Please let us know the best time to reach you.');
+      isValid = false;
+    } else {
+      clearFieldError(timeField, document.getElementById('err-time'));
+    }
+
+    if (!isValid) return;
+
+    // Submit to Formspree (replace BOOKING_FORM_ENDPOINT with your real endpoint)
+    const BOOKING_FORM_ENDPOINT = 'https://formspree.io/f/YOUR_FORM_ID';
+    const payload = {
+      name: nameVal,
+      country: countryField.value,
+      phone: phoneField.value.trim(),
+      email: emailVal,
+      website: document.getElementById('f-website').value.trim(),
+      ad_spend: spendField.value,
+      creatives: creativesField.value,
+      best_time: timeField.value.trim(),
+    };
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending...';
+
+    try {
+      const response = await fetch(BOOKING_FORM_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) throw new Error('Submission failed');
+
+      form.style.display = 'none';
+      document.getElementById('thank-you-box').style.display = 'block';
+    } catch (err) {
+      submitNote.textContent = "Something went wrong sending this — please WhatsApp us directly at +880 1943-609396 and we'll get you booked in.";
+      submitNote.classList.add('show');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Book My Free Strategy Call';
+    }
+  });
+}
+
 // ── Init everything on DOM ready ──────────────
 document.addEventListener('DOMContentLoaded', () => {
   initNavClicks();
@@ -254,4 +458,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initModal();
   initTestimonials();
   initScrollReveal();
+  initBookNowTriggers();
+  initBookingForm();
 });
