@@ -61,7 +61,7 @@
           <div class="hero-left">
             <div class="hero-text">
               <span class="hero-tag">Some Run Ads. I Build What Lasts.</span>
-              <h1>MD. Tanvir <br><span style="color: var(--accent-color)">Hossain</span></h1>
+              <h1>MD. Tanvir <br><span style="color: var(--accent-color)">Hossain</span> <span class="exp-inline-badge">2.5+ Yrs Exp.</span></h1>
               <p>I didn't start with a big agency or a fancy degree — I started by figuring things out and learning from what didn't work.<br><br>
               Now I help brands across e-commerce, fashion, automotive, real estate, and more turn ad spend into real, measurable growth.<br><br>
               If you're ready to stop guessing — I'd love to be part of that.</p>
@@ -87,17 +87,16 @@
               </div>
               <div class="cta-group">
                 <a href="#projects" class="btn btn-primary">View Proven Case Studies</a>
-                <a href="#contact" class="btn btn-secondary">Get In Touch</a>
+                <div style="display:flex; gap:16px; flex-wrap:wrap;">
+                  <a href="#contact" class="btn btn-secondary">Get In Touch</a>
+                  <a href="#book-now-form" class="btn btn-secondary book-now-trigger">Book Now</a>
+                </div>
               </div>
             </div>
           </div>
           <div class="hero-visual">
             <div class="hero-image-container">
               <img src="/images/profile-tanvir.jpg" alt="MD. Tanvir Hossain" class="hero-img">
-              <div class="experience-badge">
-                <span class="badge-num">2.5+</span>
-                <span class="badge-text">Years Exp.</span>
-              </div>
             </div>
           </div>
         </div>
@@ -129,6 +128,7 @@
                 <div class="p-stat"><span class="val">$2M+</span><span class="lbl">Revenue</span></div>
                 <div class="p-stat"><span class="val">626K</span><span class="lbl">Reach</span></div>
               </div>
+              <a href="#book-now-form" class="btn btn-sm btn-primary book-now-trigger" style="margin-top:24px;">Book Now</a>
             </div>
             <div class="modal-source-content" style="display:none">
               <p><strong>Industry:</strong> Automotive Parts (eCommerce)<br><strong>Platform:</strong> Meta Ads (Facebook)</p>
@@ -182,6 +182,7 @@
                 <div class="p-stat"><span class="val">$0.10</span><span class="lbl">Avg. CPL</span></div>
                 <div class="p-stat"><span class="val">$1.9K+</span><span class="lbl">Purchase Value</span></div>
               </div>
+              <a href="#book-now-form" class="btn btn-sm btn-primary book-now-trigger" style="margin-top:24px;">Book Now</a>
             </div>
             <div class="modal-source-content" style="display:none">
               <p><strong>Industry:</strong> Career Development & Online Education<br><strong>Market:</strong> Bangladesh<br><strong>Platform:</strong> Meta Ads (Facebook)</p>
@@ -223,6 +224,7 @@
                 <div class="p-stat"><span class="val">$7.16</span><span class="lbl">Avg. CPL</span></div>
                 <div class="p-stat"><span class="val">21K+</span><span class="lbl">Reach</span></div>
               </div>
+              <a href="#book-now-form" class="btn btn-sm btn-primary book-now-trigger" style="margin-top:24px;">Book Now</a>
             </div>
             <div class="modal-source-content" style="display:none">
               <p><strong>Client:</strong> Jamvest Cash Buyers LLC<br><strong>Location:</strong> Florida, USA<br><strong>CRM:</strong> GoHighLevel</p>
@@ -262,6 +264,7 @@
                 <div class="p-stat"><span class="val">7.3x</span><span class="lbl">ROAS</span></div>
                 <div class="p-stat"><span class="val">2.1M+</span><span class="lbl">Impr.</span></div>
               </div>
+              <a href="#book-now-form" class="btn btn-sm btn-primary book-now-trigger" style="margin-top:24px;">Book Now</a>
             </div>
             <div class="modal-source-content" style="display:none">
               <p><strong>Industry:</strong> Health & Wellness<br><strong>Platform:</strong> TikTok Ads</p>
@@ -633,6 +636,99 @@
             <span class="c-link">Bangladesh | Global Clients</span>
           </div>
         </div>
+
+        <!-- Book Now Form -->
+        <div class="card booking-card" id="book-now-form">
+          <div class="section-title" style="margin-bottom:32px;">
+            <h3 style="font-family:'Outfit', sans-serif; font-size:1.75rem; margin-bottom:8px;">Book a Free Strategy Call</h3>
+            <p>Fill this out and I'll personally reach out to plan your next growth move.</p>
+          </div>
+
+          <form id="booking-form" novalidate>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="f-name">Full Name</label>
+                <input type="text" id="f-name" name="name" placeholder="Your full name" required>
+                <span class="form-error" id="err-name"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="f-country">Country</label>
+                <select id="f-country" name="country" required>
+                  <option value="" disabled selected>Select your country</option>
+                  <option value="bd">Bangladesh</option>
+                  <option value="us">USA</option>
+                  <option value="uk">UK</option>
+                  <option value="au">Australia</option>
+                  <option value="ca">Canada</option>
+                  <option value="other">Other</option>
+                </select>
+                <span class="form-error" id="err-country"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="f-phone">Phone / WhatsApp Number</label>
+                <input type="tel" id="f-phone" name="phone" placeholder="Select country first" required>
+                <span class="form-hint" id="hint-phone">Select a country to see the expected format.</span>
+                <span class="form-error" id="err-phone"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="f-email">Email Address</label>
+                <input type="email" id="f-email" name="email" placeholder="you@business.com" required>
+                <span class="form-error" id="err-email"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="f-website">Website / Business Link <span class="form-optional">(optional)</span></label>
+                <input type="text" id="f-website" name="website" placeholder="https://yourbusiness.com">
+                <span class="form-error" id="err-website"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="f-spend">Current Monthly Ad Spend</label>
+                <select id="f-spend" name="ad_spend" required>
+                  <option value="" disabled selected>Select a range</option>
+                  <option value="no-ads">Not running ads yet</option>
+                  <option value="under-500">Under $500</option>
+                  <option value="500-2000">$500 – $2,000</option>
+                  <option value="2000-5000">$2,000 – $5,000</option>
+                  <option value="5000-10000">$5,000 – $10,000</option>
+                  <option value="10000-plus">$10,000+</option>
+                </select>
+                <span class="form-error" id="err-spend"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="f-creatives">Creatives Produced (per month)</label>
+                <select id="f-creatives" name="creatives" required>
+                  <option value="" disabled selected>Select a range</option>
+                  <option value="0">0 — Just starting out</option>
+                  <option value="1-5">1 – 5 per month</option>
+                  <option value="6-15">6 – 15 per month</option>
+                  <option value="16-30">16 – 30 per month</option>
+                  <option value="30-plus">30+ per month</option>
+                </select>
+                <span class="form-error" id="err-creatives"></span>
+              </div>
+
+              <div class="form-group form-group-full">
+                <label for="f-time">Best Time to Contact You</label>
+                <input type="text" id="f-time" name="best_time" placeholder="e.g. Weekdays 10am–1pm (GMT+6)" required>
+                <span class="form-error" id="err-time"></span>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="booking-submit-btn" style="margin-top:8px; width:100%;">Book My Free Strategy Call</button>
+            <p class="form-submit-note" id="form-submit-note"></p>
+          </form>
+
+          <div class="thank-you-box" id="thank-you-box" style="display:none;">
+            <span class="thank-you-icon">✅</span>
+            <h3>Thank you for your submission!</h3>
+            <p>We'll be in touch with you soon.</p>
+          </div>
+        </div>
       </div>
     </section>
   </main>
@@ -658,6 +754,7 @@
           <h3 id="modal-title"></h3>
           <div id="modal-desc"></div>
           <div id="modal-stats" class="project-stats" style="margin-top: 24px;"></div>
+          <a href="#book-now-form" class="btn btn-primary book-now-trigger" style="margin-top:24px;">Book Now</a>
         </div>
       </div>
     </div>
