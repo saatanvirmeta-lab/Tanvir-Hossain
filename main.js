@@ -424,22 +424,27 @@ function initBookingForm() {
       clearFieldError(timeField, document.getElementById('err-time'));
     }
 
-    if (!isValid) return;
+  try {
+  const { error } = await supabaseClient
+    .from("Tanvir's Site")
+    .insert([payload]);
 
-    // Submit lead to Supabase
-const payload = {
-  name: nameVal,
-  country: countryField.value,
-  phone: phoneField.value.trim(),
-  email: emailVal,
-  website: document.getElementById('f-website').value.trim(),
-  ad_spend: spendField.value,
-  creatives: creativesField.value,
-  best_time: timeField.value.trim(),
-};
+  if (error) {
+    console.error('Supabase error:', error);
+    throw new Error('Submission failed');
+  }
 
-submitBtn.disabled = true;
-submitBtn.textContent = 'Sending...';
+  document.getElementById('booking-heading').style.display = 'none';
+  form.style.display = 'none';
+  document.getElementById('thank-you-box').style.display = 'block';
+} catch (err) {
+  submitNote.textContent = "Something went wrong sending this — please WhatsApp us directly at +880 1943-609396 and we'll get you booked in.";
+  submitNote.classList.add('show');
+  submitBtn.disabled = false;
+  submitBtn.textContent = 'Book My Free Strategy Call';
+}
+  });
+}
 
 try {
 const { error } = await supabaseClient
