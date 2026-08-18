@@ -78,6 +78,9 @@ nav {
   color: var(--text-primary);
   letter-spacing: -1px;
   margin-right: 40px;
+  text-decoration: none;
+  cursor: pointer;
+}
 }
 
 .logo span {
