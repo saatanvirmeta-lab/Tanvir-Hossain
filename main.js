@@ -446,28 +446,14 @@ const { error } = await supabaseClient
   .from("Tanvir's Site")
   .insert([payload]);
 
-  if (error) {
-    console.error('Supabase error:', error);
-    throw new Error('Submission failed');
-  }
-
-     if (error) {
+if (error) {
   console.error('Supabase error:', error);
   throw new Error('Submission failed');
 }
 
-// এখানে সরাসরি এগুলো থাকবে
 form.style.display = 'none';
 document.getElementById('thank-you-box').style.display = 'block';
-
-      form.style.display = 'none';
-      document.getElementById('thank-you-box').style.display = 'block';
-    } catch (err) {
-      submitNote.textContent = "Something went wrong sending this — please WhatsApp us directly at +880 1943-609396 and we'll get you booked in.";
-      submitNote.classList.add('show');
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Book My Free Strategy Call';
-    }
+  
   });
 }
 
