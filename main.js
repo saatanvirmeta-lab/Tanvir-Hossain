@@ -452,6 +452,7 @@ if (error) {
 }
 
 form.style.display = 'none';
+  document.getElementById('booking-heading').style.display = 'none';
 document.getElementById('thank-you-box').style.display = 'block';
   
   });
