@@ -10,7 +10,7 @@
   --gradient-main: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   --gradient-soft: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
   --glass-border: rgba(255, 255, 255, 0.08);
-  --header-height: 80px;
+  --header-height: 84px;
 }
 
 * {
@@ -49,14 +49,20 @@ h5 {
 
 /* Header & Nav */
 header {
-  height: var(--header-height);
   position: fixed;
-  top: 0;
-  width: 100%;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 40px);
+  max-width: 1200px;
+  height: 68px;
   z-index: 1000;
-  background: rgba(12, 12, 14, 0.8);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 100px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 header .container {
@@ -392,14 +398,15 @@ nav {
 
 .btn-glass {
   background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   color: var(--text-primary);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
 .btn-glass:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.14);
   border-color: var(--accent-color);
   transform: translateY(-2px);
 }
@@ -761,8 +768,10 @@ section {
 .tag {
   padding: 8px 16px;
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--glass-border);
-  border-radius: 8px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 100px;
   font-size: 0.9rem;
   color: var(--text-secondary);
   transition: 0.3s;
@@ -1283,7 +1292,8 @@ section {
 
 @media (max-width: 1024px) {
   header {
-    background: rgba(12, 12, 14, 0.95);
+    background: rgba(20, 20, 24, 0.5);
+    width: calc(100% - 24px);
   }
 
   .nav-links {
