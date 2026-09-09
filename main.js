@@ -455,10 +455,6 @@ function initBookingForm() {
       console.error('Supabase submission failed:', err);
     }
   });
-}
-  });
-}
-
 // ── Init everything on DOM ready ──────────────
 document.addEventListener('DOMContentLoaded', () => {
   initNavClicks();
