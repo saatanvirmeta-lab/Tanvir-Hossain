@@ -201,22 +201,30 @@ function initModal() {
         descEl.textContent = card.dataset.desc || '';
       }
 
-      const statsEl = document.getElementById('modal-stats');
+       const statsEl = document.getElementById('modal-stats');
 
-      statsEl.innerHTML = [stat1, stat2, stat3]
-        .filter(Boolean)
-        .map((s) => {
-          const [val, ...lblParts] = s.split(' ');
+      // Skip the auto stat-bar if this case study already has its own
+      // "Key Metrics" section inside the rich content (new template)
+      const hasCustomKeyMetrics =
+        richContent && /key metrics/i.test(richContent.textContent);
 
-          return `
-            <div class="p-stat">
-              <span class="val">${val}</span>
-              <span class="lbl">${lblParts.join(' ')}</span>
-            </div>
-          `;
-        })
-        .join('');
+      if (hasCustomKeyMetrics) {
+        statsEl.innerHTML = '';
+      } else {
+        statsEl.innerHTML = [stat1, stat2, stat3]
+          .filter(Boolean)
+          .map((s) => {
+            const [val, ...lblParts] = s.split(' ');
 
+            return `
+              <div class="p-stat">
+                <span class="val">${val}</span>
+                <span class="lbl">${lblParts.join(' ')}</span>
+              </div>
+            `;
+          })
+          .join('');
+      }
       savedScrollY =
         window.pageYOffset ||
         document.documentElement.scrollTop;
