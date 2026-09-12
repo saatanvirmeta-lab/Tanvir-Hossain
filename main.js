@@ -10,12 +10,7 @@ const supabaseClient = window.supabase.createClient(
 );
 
 
-// তোমার আগের main.js code এখান থেকে শুরু হবে
-// ─────────────────────────────────────────────
-//  main.js — Tanvir Hossain Portfolio
-// ─────────────────────────────────────────────
-
-// ── Section → URL mapping ───────────────────
+// ── Section → URL mapping ──────────────────────
 const sectionRoutes = {
   'hero':       '/',
   'projects':   '/case-studies',
@@ -28,22 +23,27 @@ const sectionRoutes = {
   'contact':    '/contact',
 };
 
-// Reverse map: URL path → section id
+
+// ── Reverse map: URL path → section id ─────────
 const routeSections = Object.fromEntries(
   Object.entries(sectionRoutes).map(([id, path]) => [path, id])
 );
 
-// ── Update URL without reload ─────────────────
+
+// ── Update URL without reload ───────────────────
 function updateURL(sectionId) {
   const path = sectionRoutes[sectionId] || '/';
+
   if (window.location.pathname !== path) {
     window.history.pushState({ sectionId }, '', path);
   }
 }
 
-// ── IntersectionObserver — watch sections ────
+
+// ── IntersectionObserver — watch sections ──────
 function initScrollURLUpdate() {
   const sections = document.querySelectorAll('section[id]');
+
   if (!sections.length) return;
 
   const observer = new IntersectionObserver(
@@ -63,7 +63,8 @@ function initScrollURLUpdate() {
   sections.forEach((section) => observer.observe(section));
 }
 
-// ── Active nav link highlight ─────────────────
+
+// ── Active nav link highlight ───────────────────
 function updateActiveNavLink(sectionId) {
   const path = sectionRoutes[sectionId] || '/';
 
@@ -82,7 +83,8 @@ function updateActiveNavLink(sectionId) {
   });
 }
 
-// ── Nav link click → scroll + URL update ─────
+
+// ── Nav link click → scroll + URL update ───────
 function initNavClicks() {
   document.querySelectorAll('.nav-links a[href^="#"]').forEach((link) => {
     link.addEventListener('click', (e) => {
@@ -110,7 +112,8 @@ function initNavClicks() {
   });
 }
 
-// ── Handle direct URL visit ───────────────────
+
+// ── Handle direct URL visit ────────────────────
 function handleDirectURLVisit() {
   const path = window.location.pathname;
 
@@ -134,7 +137,8 @@ function handleDirectURLVisit() {
   }
 }
 
-// ── Handle browser back/forward buttons ───────
+
+// ── Handle browser back/forward buttons ─────────
 window.addEventListener('popstate', () => {
   const path = window.location.pathname;
   const sectionId = routeSections[path] || 'hero';
@@ -150,7 +154,8 @@ window.addEventListener('popstate', () => {
   }
 });
 
-// ── Mobile menu toggle ────────────────────────
+
+// ── Mobile menu toggle ─────────────────────────
 function initMobileMenu() {
   const toggle = document.getElementById('menu-toggle');
   const navLinks = document.getElementById('nav-links');
@@ -170,7 +175,8 @@ function initMobileMenu() {
   });
 }
 
-// ── Modal (Case Studies) ──────────────────────
+
+// ── Modal (Case Studies) ────────────────────────
 function initModal() {
   const modal = document.getElementById('project-modal');
   const closeBtn = document.querySelector('.modal-close');
@@ -187,44 +193,56 @@ function initModal() {
       const stat2 = card.dataset.stat2 || '';
       const stat3 = card.dataset.stat3 || '';
 
-      document.getElementById('modal-title').textContent = title;
-      document.getElementById('modal-image').src = imgSrc;
+      const titleEl = document.getElementById('modal-title');
+      const imageEl = document.getElementById('modal-image');
+      const descEl = document.getElementById('modal-desc');
+      const statsEl = document.getElementById('modal-stats');
+
+      if (titleEl) {
+        titleEl.textContent = title;
+      }
+
+      if (imageEl) {
+        imageEl.src = imgSrc;
+      }
 
       const richContent =
         card.querySelector('.modal-source-content');
 
-      const descEl = document.getElementById('modal-desc');
-
-      if (richContent) {
-        descEl.innerHTML = richContent.innerHTML;
-      } else {
-        descEl.textContent = card.dataset.desc || '';
+      if (descEl) {
+        if (richContent) {
+          descEl.innerHTML = richContent.innerHTML;
+        } else {
+          descEl.textContent = card.dataset.desc || '';
+        }
       }
 
-       const statsEl = document.getElementById('modal-stats');
-
-      // Skip the auto stat-bar if this case study already has its own
-      // "Key Metrics" section inside the rich content (new template)
+      // Skip auto stat-bar if this case study already
+      // has its own "Key Metrics" section
       const hasCustomKeyMetrics =
-        richContent && /key metrics/i.test(richContent.textContent);
+        richContent &&
+        /key metrics/i.test(richContent.textContent);
 
-      if (hasCustomKeyMetrics) {
-        statsEl.innerHTML = '';
-      } else {
-        statsEl.innerHTML = [stat1, stat2, stat3]
-          .filter(Boolean)
-          .map((s) => {
-            const [val, ...lblParts] = s.split(' ');
+      if (statsEl) {
+        if (hasCustomKeyMetrics) {
+          statsEl.innerHTML = '';
+        } else {
+          statsEl.innerHTML = [stat1, stat2, stat3]
+            .filter(Boolean)
+            .map((s) => {
+              const [val, ...lblParts] = s.split(' ');
 
-            return `
-              <div class="p-stat">
-                <span class="val">${val}</span>
-                <span class="lbl">${lblParts.join(' ')}</span>
-              </div>
-            `;
-          })
-          .join('');
+              return `
+                <div class="p-stat">
+                  <span class="val">${val}</span>
+                  <span class="lbl">${lblParts.join(' ')}</span>
+                </div>
+              `;
+            })
+            .join('');
+        }
       }
+
       savedScrollY =
         window.pageYOffset ||
         document.documentElement.scrollTop;
@@ -268,7 +286,48 @@ function initModal() {
   });
 }
 
-// ── Testimonials auto-scroll ──────────────────
+
+// ── Fullscreen Image Lightbox ──────────────────
+function initImageLightbox() {
+  const lightbox = document.getElementById('image-lightbox');
+  const lightboxImg = document.getElementById('lightbox-img');
+  const modalImg = document.getElementById('modal-image');
+  const closeBtn = document.querySelector('.lightbox-close');
+
+  if (!lightbox || !lightboxImg || !modalImg) return;
+
+  function openLightbox() {
+    if (!modalImg.src) return;
+
+    lightboxImg.src = modalImg.src;
+    lightbox.classList.add('open');
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove('open');
+  }
+
+  modalImg.addEventListener('click', openLightbox);
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeLightbox);
+  }
+
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) {
+      closeLightbox();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeLightbox();
+    }
+  });
+}
+
+
+// ── Testimonials auto-scroll ────────────────────
 function initTestimonials() {
   const track = document.querySelector('.testimonials-track');
 
@@ -282,7 +341,8 @@ function initTestimonials() {
   });
 }
 
-// ── Scroll-reveal animation ───────────────────
+
+// ── Scroll-reveal animation ─────────────────────
 function initScrollReveal() {
   const revealEls = document.querySelectorAll(
     '.card, .timeline-item, .step-card, .skill-category, .faq-item'
@@ -310,7 +370,8 @@ function initScrollReveal() {
   });
 }
 
-// ── Book Now buttons → scroll to booking form ─
+
+// ── Book Now buttons → scroll to booking form ──
 function initBookNowTriggers() {
   const target = document.getElementById('book-now-form');
 
@@ -350,7 +411,8 @@ function initBookNowTriggers() {
   });
 }
 
-// ── Booking form: phone rules per country ─────
+
+// ── Booking form: phone rules per country ──────
 const PHONE_RULES = {
   bd: {
     min: 10,
@@ -389,7 +451,8 @@ const PHONE_RULES = {
   }
 };
 
-// Email patterns that indicate a fake/test entry
+
+// ── Fake/test email protection ─────────────────
 const FAKE_EMAIL_LOCAL_PARTS =
   /^(test|testmail|test123|testing|demo|sample|fake|dummy|asdf|xxx+|abc123?|noone|nobody|none|na)\d*$/i;
 
@@ -402,6 +465,7 @@ const DISPOSABLE_EMAIL_DOMAINS = [
   'fake.com'
 ];
 
+
 function showFieldError(fieldEl, errorEl, message) {
   fieldEl.classList.add('invalid');
 
@@ -410,6 +474,7 @@ function showFieldError(fieldEl, errorEl, message) {
     errorEl.classList.add('show');
   }
 }
+
 
 function clearFieldError(fieldEl, errorEl) {
   fieldEl.classList.remove('invalid');
@@ -420,6 +485,8 @@ function clearFieldError(fieldEl, errorEl) {
   }
 }
 
+
+// ── Booking Form ────────────────────────────────
 function initBookingForm() {
   const form = document.getElementById('booking-form');
 
@@ -441,28 +508,38 @@ function initBookingForm() {
     document.getElementById('booking-submit-btn');
 
   // Update phone hint + placeholder whenever country changes
-  countryField.addEventListener('change', () => {
-    const rule = PHONE_RULES[countryField.value];
+  if (countryField) {
+    countryField.addEventListener('change', () => {
+      const rule = PHONE_RULES[countryField.value];
 
-    if (rule) {
-      phoneHint.textContent = rule.hint;
-      phoneField.placeholder = rule.hint;
-    }
+      if (rule) {
+        if (phoneHint) {
+          phoneHint.textContent = rule.hint;
+        }
 
-    clearFieldError(
-      countryField,
-      document.getElementById('err-country')
-    );
-  });
+        if (phoneField) {
+          phoneField.placeholder = rule.hint;
+        }
+      }
+
+      clearFieldError(
+        countryField,
+        document.getElementById('err-country')
+      );
+    });
+  }
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    submitNote.classList.remove('show');
+    if (submitNote) {
+      submitNote.classList.remove('show');
+    }
 
     let isValid = true;
 
-    // Name
+
+    // ── Name ────────────────────────────────────
     const nameField =
       document.getElementById('f-name');
 
@@ -484,7 +561,8 @@ function initBookingForm() {
       );
     }
 
-    // Country
+
+    // ── Country ─────────────────────────────────
     if (!countryField.value) {
       showFieldError(
         countryField,
@@ -500,7 +578,8 @@ function initBookingForm() {
       );
     }
 
-    // Phone
+
+    // ── Phone ───────────────────────────────────
     const digitsOnly =
       phoneField.value.replace(/\D/g, '');
 
@@ -526,7 +605,8 @@ function initBookingForm() {
       );
     }
 
-    // Email
+
+    // ── Email ───────────────────────────────────
     const emailField =
       document.getElementById('f-email');
 
@@ -572,7 +652,8 @@ function initBookingForm() {
       }
     }
 
-    // Ad spend
+
+    // ── Ad spend ────────────────────────────────
     const spendField =
       document.getElementById('f-spend');
 
@@ -591,7 +672,8 @@ function initBookingForm() {
       );
     }
 
-    // Creatives
+
+    // ── Creatives ───────────────────────────────
     const creativesField =
       document.getElementById('f-creatives');
 
@@ -610,7 +692,8 @@ function initBookingForm() {
       );
     }
 
-    // Best time
+
+    // ── Best time ───────────────────────────────
     const timeField =
       document.getElementById('f-time');
 
@@ -629,9 +712,12 @@ function initBookingForm() {
       );
     }
 
+
+    // ── Stop if validation fails ────────────────
     if (!isValid) return;
 
-    // Show confirmation immediately
+
+    // ── Show confirmation ───────────────────────
     const bookingHeading =
       document.getElementById('booking-heading');
 
@@ -648,19 +734,24 @@ function initBookingForm() {
       thankYouBox.style.display = 'block';
     }
 
-    // Submit lead to Supabase in the background
+
+    // ── Submit lead to Supabase ─────────────────
+    const websiteField =
+      document.getElementById('f-website');
+
     const payload = {
       name: nameVal,
       country: countryField.value,
       phone: phoneField.value.trim(),
       email: emailVal,
-      website: document
-        .getElementById('f-website')
-        .value.trim(),
+      website: websiteField
+        ? websiteField.value.trim()
+        : '',
       ad_spend: spendField.value,
       creatives: creativesField.value,
       best_time: timeField.value.trim()
     };
+
 
     try {
       const { error } =
@@ -683,13 +774,15 @@ function initBookingForm() {
   });
 }
 
-// ── Init everything on DOM ready ──────────────
+
+// ── Init everything on DOM ready ────────────────
 document.addEventListener('DOMContentLoaded', () => {
   initNavClicks();
   initScrollURLUpdate();
   handleDirectURLVisit();
   initMobileMenu();
   initModal();
+  initImageLightbox();
   initTestimonials();
   initScrollReveal();
   initBookNowTriggers();
