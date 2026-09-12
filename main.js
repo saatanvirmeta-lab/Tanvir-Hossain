@@ -12,15 +12,15 @@ const supabaseClient = window.supabase.createClient(
 
 // ── Section → URL mapping ──────────────────────
 const sectionRoutes = {
-  'hero':       '/',
-  'projects':   '/case-studies',
-  'about':      '/about',
-  'experience': '/experience',
-  'skills':     '/skills',
-  'services':   '/services',
-  'process':    '/process',
-  'faq':        '/faq',
-  'contact':    '/contact',
+  hero: '/',
+  projects: '/case-studies',
+  about: '/about',
+  experience: '/experience',
+  skills: '/skills',
+  services: '/services',
+  process: '/process',
+  faq: '/faq',
+  contact: '/contact'
 };
 
 
@@ -56,7 +56,7 @@ function initScrollURLUpdate() {
       });
     },
     {
-      threshold: 0.35,
+      threshold: 0.35
     }
   );
 
@@ -86,14 +86,20 @@ function updateActiveNavLink(sectionId) {
 
 // ── Nav link click → scroll + URL update ───────
 function initNavClicks() {
-  document.querySelectorAll('.nav-links a[href^="#"]').forEach((link) => {
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
+  document
+    .querySelectorAll('.nav-links a[href^="#"]')
+    .forEach((link) => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
 
-      const targetId = link.getAttribute('href').replace('#', '');
-      const target = document.getElementById(targetId);
+        const targetId = link
+          .getAttribute('href')
+          .replace('#', '');
 
-      if (target) {
+        const target = document.getElementById(targetId);
+
+        if (!target) return;
+
         target.scrollIntoView({
           behavior: 'smooth',
           block: 'start'
@@ -107,13 +113,12 @@ function initNavClicks() {
         if (navLinks) {
           navLinks.classList.remove('open');
         }
-      }
+      });
     });
-  });
 }
 
 
-// ── Handle direct URL visit ────────────────────
+// ── Handle direct URL visit ─────────────────────
 function handleDirectURLVisit() {
   const path = window.location.pathname;
 
@@ -121,20 +126,20 @@ function handleDirectURLVisit() {
 
   const sectionId = routeSections[path];
 
-  if (sectionId) {
-    setTimeout(() => {
-      const target = document.getElementById(sectionId);
+  if (!sectionId) return;
 
-      if (target) {
-        target.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start'
-        });
+  setTimeout(() => {
+    const target = document.getElementById(sectionId);
 
-        updateActiveNavLink(sectionId);
-      }
-    }, 100);
-  }
+    if (!target) return;
+
+    target.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+
+    updateActiveNavLink(sectionId);
+  }, 100);
 }
 
 
@@ -144,14 +149,14 @@ window.addEventListener('popstate', () => {
   const sectionId = routeSections[path] || 'hero';
   const target = document.getElementById(sectionId);
 
-  if (target) {
-    target.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start'
-    });
+  if (!target) return;
 
-    updateActiveNavLink(sectionId);
-  }
+  target.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start'
+  });
+
+  updateActiveNavLink(sectionId);
 });
 
 
@@ -168,7 +173,10 @@ function initMobileMenu() {
   });
 
   document.addEventListener('click', (e) => {
-    if (!toggle.contains(e.target) && !navLinks.contains(e.target)) {
+    if (
+      !toggle.contains(e.target) &&
+      !navLinks.contains(e.target)
+    ) {
       navLinks.classList.remove('open');
       toggle.classList.remove('active');
     }
@@ -185,77 +193,97 @@ function initModal() {
 
   let savedScrollY = 0;
 
-  document.querySelectorAll('.featured-project').forEach((card) => {
-    card.addEventListener('click', () => {
-      const title = card.dataset.title || '';
-      const imgSrc = card.dataset.image || '';
-      const stat1 = card.dataset.stat1 || '';
-      const stat2 = card.dataset.stat2 || '';
-      const stat3 = card.dataset.stat3 || '';
+  document
+    .querySelectorAll('.featured-project')
+    .forEach((card) => {
+      card.addEventListener('click', () => {
+        const title = card.dataset.title || '';
+        const imgSrc = card.dataset.image || '';
+        const stat1 = card.dataset.stat1 || '';
+        const stat2 = card.dataset.stat2 || '';
+        const stat3 = card.dataset.stat3 || '';
 
-      const titleEl = document.getElementById('modal-title');
-      const imageEl = document.getElementById('modal-image');
-      const descEl = document.getElementById('modal-desc');
-      const statsEl = document.getElementById('modal-stats');
+        const titleEl =
+          document.getElementById('modal-title');
 
-      if (titleEl) {
-        titleEl.textContent = title;
-      }
+        const imageEl =
+          document.getElementById('modal-image');
 
-      if (imageEl) {
-        imageEl.src = imgSrc;
-      }
+        const descEl =
+          document.getElementById('modal-desc');
 
-      const richContent =
-        card.querySelector('.modal-source-content');
+        const statsEl =
+          document.getElementById('modal-stats');
 
-      if (descEl) {
-        if (richContent) {
-          descEl.innerHTML = richContent.innerHTML;
-        } else {
-          descEl.textContent = card.dataset.desc || '';
+        if (titleEl) {
+          titleEl.textContent = title;
         }
-      }
 
-      // Skip auto stat-bar if this case study already
-      // has its own "Key Metrics" section
-      const hasCustomKeyMetrics =
-        richContent &&
-        /key metrics/i.test(richContent.textContent);
-
-      if (statsEl) {
-        if (hasCustomKeyMetrics) {
-          statsEl.innerHTML = '';
-        } else {
-          statsEl.innerHTML = [stat1, stat2, stat3]
-            .filter(Boolean)
-            .map((s) => {
-              const [val, ...lblParts] = s.split(' ');
-
-              return `
-                <div class="p-stat">
-                  <span class="val">${val}</span>
-                  <span class="lbl">${lblParts.join(' ')}</span>
-                </div>
-              `;
-            })
-            .join('');
+        if (imageEl) {
+          imageEl.src = imgSrc;
         }
-      }
 
-      savedScrollY =
-        window.pageYOffset ||
-        document.documentElement.scrollTop;
+        const richContent =
+          card.querySelector('.modal-source-content');
 
-      modal.classList.add('open');
+        if (descEl) {
+          if (richContent) {
+            descEl.innerHTML = richContent.innerHTML;
+          } else {
+            descEl.textContent =
+              card.dataset.desc || '';
+          }
+        }
 
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${savedScrollY}px`;
-      document.body.style.left = '0';
-      document.body.style.right = '0';
-      document.body.style.width = '100%';
+        const hasCustomKeyMetrics =
+          richContent &&
+          /key metrics/i.test(
+            richContent.textContent
+          );
+
+        if (statsEl) {
+          if (hasCustomKeyMetrics) {
+            statsEl.innerHTML = '';
+          } else {
+            statsEl.innerHTML = [
+              stat1,
+              stat2,
+              stat3
+            ]
+              .filter(Boolean)
+              .map((stat) => {
+                const [
+                  value,
+                  ...labelParts
+                ] = stat.split(' ');
+
+                return `
+                  <div class="p-stat">
+                    <span class="val">${value}</span>
+                    <span class="lbl">
+                      ${labelParts.join(' ')}
+                    </span>
+                  </div>
+                `;
+              })
+              .join('');
+          }
+        }
+
+        savedScrollY =
+          window.pageYOffset ||
+          document.documentElement.scrollTop;
+
+        modal.classList.add('open');
+
+        document.body.style.position = 'fixed';
+        document.body.style.top =
+          `-${savedScrollY}px`;
+        document.body.style.left = '0';
+        document.body.style.right = '0';
+        document.body.style.width = '100%';
+      });
     });
-  });
 
   function closeModal() {
     modal.classList.remove('open');
@@ -270,7 +298,10 @@ function initModal() {
   }
 
   if (closeBtn) {
-    closeBtn.addEventListener('click', closeModal);
+    closeBtn.addEventListener(
+      'click',
+      closeModal
+    );
   }
 
   modal.addEventListener('click', (e) => {
@@ -289,12 +320,21 @@ function initModal() {
 
 // ── Fullscreen Image Lightbox ──────────────────
 function initImageLightbox() {
-  const lightbox = document.getElementById('image-lightbox');
-  const lightboxImg = document.getElementById('lightbox-img');
-  const modalImg = document.getElementById('modal-image');
-  const closeBtn = document.querySelector('.lightbox-close');
+  const lightbox =
+    document.getElementById('image-lightbox');
 
-  if (!lightbox || !lightboxImg || !modalImg) return;
+  const lightboxImg =
+    document.getElementById('lightbox-img');
+
+  const modalImg =
+    document.getElementById('modal-image');
+
+  const closeBtn =
+    document.querySelector('.lightbox-close');
+
+  if (!lightbox || !lightboxImg || !modalImg) {
+    return;
+  }
 
   function openLightbox() {
     if (!modalImg.src) return;
@@ -305,12 +345,19 @@ function initImageLightbox() {
 
   function closeLightbox() {
     lightbox.classList.remove('open');
+    lightboxImg.src = '';
   }
 
-  modalImg.addEventListener('click', openLightbox);
+  modalImg.addEventListener(
+    'click',
+    openLightbox
+  );
 
   if (closeBtn) {
-    closeBtn.addEventListener('click', closeLightbox);
+    closeBtn.addEventListener(
+      'click',
+      closeLightbox
+    );
   }
 
   lightbox.addEventListener('click', (e) => {
@@ -327,13 +374,19 @@ function initImageLightbox() {
 }
 
 
-// ── Testimonials auto-scroll ────────────────────
+// ── Testimonials auto-scroll ───────────────────
 function initTestimonials() {
-  const track = document.querySelector('.testimonials-track');
+  const track =
+    document.querySelector(
+      '.testimonials-track'
+    );
 
   if (!track) return;
 
-  const cards = track.querySelectorAll('.testimonial-card');
+  const cards =
+    track.querySelectorAll(
+      '.testimonial-card'
+    );
 
   cards.forEach((card) => {
     const clone = card.cloneNode(true);
@@ -344,75 +397,102 @@ function initTestimonials() {
 
 // ── Scroll-reveal animation ─────────────────────
 function initScrollReveal() {
-  const revealEls = document.querySelectorAll(
-    '.card, .timeline-item, .step-card, .skill-category, .faq-item'
-  );
+  const revealEls =
+    document.querySelectorAll(
+      '.card, .timeline-item, .step-card, .skill-category, .faq-item'
+    );
 
   if (!revealEls.length) return;
 
-  const revealObserver = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('revealed');
-          revealObserver.unobserve(entry.target);
-        }
-      });
-    },
-    {
-      threshold: 0.1
-    }
-  );
+  const revealObserver =
+    new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add(
+              'revealed'
+            );
+
+            revealObserver.unobserve(
+              entry.target
+            );
+          }
+        });
+      },
+      {
+        threshold: 0.1
+      }
+    );
 
   revealEls.forEach((el) => {
-    el.classList.add('reveal-on-scroll');
+    el.classList.add(
+      'reveal-on-scroll'
+    );
+
     revealObserver.observe(el);
   });
 }
 
 
-// ── Book Now buttons → scroll to booking form ──
+// ── Book Now buttons → booking form ────────────
 function initBookNowTriggers() {
-  const target = document.getElementById('book-now-form');
+  const target =
+    document.getElementById(
+      'book-now-form'
+    );
 
   if (!target) return;
 
-  document.querySelectorAll('.book-now-trigger').forEach((btn) => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
+  document
+    .querySelectorAll('.book-now-trigger')
+    .forEach((btn) => {
+      btn.addEventListener(
+        'click',
+        (e) => {
+          e.preventDefault();
 
-      const modal = document.getElementById('project-modal');
+          const modal =
+            document.getElementById(
+              'project-modal'
+            );
 
-      if (modal && modal.classList.contains('open')) {
-        modal.classList.remove('open');
+          if (
+            modal &&
+            modal.classList.contains('open')
+          ) {
+            modal.classList.remove('open');
 
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.left = '';
-        document.body.style.right = '';
-        document.body.style.width = '';
-      }
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.left = '';
+            document.body.style.right = '';
+            document.body.style.width = '';
+          }
 
-      target.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-      });
-
-      setTimeout(() => {
-        const nameField = document.getElementById('f-name');
-
-        if (nameField) {
-          nameField.focus({
-            preventScroll: true
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
           });
+
+          setTimeout(() => {
+            const nameField =
+              document.getElementById(
+                'f-name'
+              );
+
+            if (nameField) {
+              nameField.focus({
+                preventScroll: true
+              });
+            }
+          }, 500);
         }
-      }, 500);
+      );
     });
-  });
 }
 
 
-// ── Booking form: phone rules per country ──────
+// ── Booking form: phone rules ─────────────────
 const PHONE_RULES = {
   bd: {
     min: 10,
@@ -452,7 +532,7 @@ const PHONE_RULES = {
 };
 
 
-// ── Fake/test email protection ─────────────────
+// ── Fake/test email protection ────────────────
 const FAKE_EMAIL_LOCAL_PARTS =
   /^(test|testmail|test123|testing|demo|sample|fake|dummy|asdf|xxx+|abc123?|noone|nobody|none|na)\d*$/i;
 
@@ -466,8 +546,14 @@ const DISPOSABLE_EMAIL_DOMAINS = [
 ];
 
 
-function showFieldError(fieldEl, errorEl, message) {
-  fieldEl.classList.add('invalid');
+function showFieldError(
+  fieldEl,
+  errorEl,
+  message
+) {
+  if (fieldEl) {
+    fieldEl.classList.add('invalid');
+  }
 
   if (errorEl) {
     errorEl.textContent = message;
@@ -476,8 +562,15 @@ function showFieldError(fieldEl, errorEl, message) {
 }
 
 
-function clearFieldError(fieldEl, errorEl) {
-  fieldEl.classList.remove('invalid');
+function clearFieldError(
+  fieldEl,
+  errorEl
+) {
+  if (fieldEl) {
+    fieldEl.classList.remove(
+      'invalid'
+    );
+  }
 
   if (errorEl) {
     errorEl.textContent = '';
@@ -486,305 +579,432 @@ function clearFieldError(fieldEl, errorEl) {
 }
 
 
-// ── Booking Form ────────────────────────────────
+// ── Booking Form ──────────────────────────────
 function initBookingForm() {
-  const form = document.getElementById('booking-form');
+  const form =
+    document.getElementById(
+      'booking-form'
+    );
 
   if (!form) return;
 
   const countryField =
-    document.getElementById('f-country');
+    document.getElementById(
+      'f-country'
+    );
 
   const phoneField =
-    document.getElementById('f-phone');
+    document.getElementById(
+      'f-phone'
+    );
 
   const phoneHint =
-    document.getElementById('hint-phone');
+    document.getElementById(
+      'hint-phone'
+    );
 
   const submitNote =
-    document.getElementById('form-submit-note');
+    document.getElementById(
+      'form-submit-note'
+    );
 
   const submitBtn =
-    document.getElementById('booking-submit-btn');
+    document.getElementById(
+      'booking-submit-btn'
+    );
 
-  // Update phone hint + placeholder whenever country changes
+  // Country change
   if (countryField) {
-    countryField.addEventListener('change', () => {
-      const rule = PHONE_RULES[countryField.value];
+    countryField.addEventListener(
+      'change',
+      () => {
+        const rule =
+          PHONE_RULES[
+            countryField.value
+          ];
 
-      if (rule) {
-        if (phoneHint) {
-          phoneHint.textContent = rule.hint;
+        if (rule) {
+          if (phoneHint) {
+            phoneHint.textContent =
+              rule.hint;
+          }
+
+          if (phoneField) {
+            phoneField.placeholder =
+              rule.hint;
+          }
         }
 
-        if (phoneField) {
-          phoneField.placeholder = rule.hint;
-        }
+        clearFieldError(
+          countryField,
+          document.getElementById(
+            'err-country'
+          )
+        );
       }
-
-      clearFieldError(
-        countryField,
-        document.getElementById('err-country')
-      );
-    });
+    );
   }
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+  form.addEventListener(
+    'submit',
+    async (e) => {
+      e.preventDefault();
 
-    if (submitNote) {
-      submitNote.classList.remove('show');
-    }
+      if (submitNote) {
+        submitNote.classList.remove(
+          'show'
+        );
+      }
 
-    let isValid = true;
-
-
-    // ── Name ────────────────────────────────────
-    const nameField =
-      document.getElementById('f-name');
-
-    const nameVal =
-      nameField.value.trim();
-
-    if (nameVal.length < 2) {
-      showFieldError(
-        nameField,
-        document.getElementById('err-name'),
-        'Please enter your full name.'
-      );
-
-      isValid = false;
-    } else {
-      clearFieldError(
-        nameField,
-        document.getElementById('err-name')
-      );
-    }
+      let isValid = true;
 
 
-    // ── Country ─────────────────────────────────
-    if (!countryField.value) {
-      showFieldError(
-        countryField,
-        document.getElementById('err-country'),
-        'Please select your country.'
-      );
+      // ── Name ───────────────────────────────
+      const nameField =
+        document.getElementById(
+          'f-name'
+        );
 
-      isValid = false;
-    } else {
-      clearFieldError(
-        countryField,
-        document.getElementById('err-country')
-      );
-    }
+      const nameVal =
+        nameField
+          ? nameField.value.trim()
+          : '';
 
-
-    // ── Phone ───────────────────────────────────
-    const digitsOnly =
-      phoneField.value.replace(/\D/g, '');
-
-    const rule =
-      PHONE_RULES[countryField.value] ||
-      PHONE_RULES.other;
-
-    if (
-      digitsOnly.length < rule.min ||
-      digitsOnly.length > rule.max
-    ) {
-      showFieldError(
-        phoneField,
-        document.getElementById('err-phone'),
-        `Please enter a valid phone number (${rule.hint}).`
-      );
-
-      isValid = false;
-    } else {
-      clearFieldError(
-        phoneField,
-        document.getElementById('err-phone')
-      );
-    }
-
-
-    // ── Email ───────────────────────────────────
-    const emailField =
-      document.getElementById('f-email');
-
-    const emailVal =
-      emailField.value.trim();
-
-    const emailErrorEl =
-      document.getElementById('err-email');
-
-    const basicEmailPattern =
-      /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!basicEmailPattern.test(emailVal)) {
-      showFieldError(
-        emailField,
-        emailErrorEl,
-        'Please enter a valid email address.'
-      );
-
-      isValid = false;
-    } else {
-      const [localPart, domainPart] =
-        emailVal.split('@');
-
-      if (
-        FAKE_EMAIL_LOCAL_PARTS.test(localPart) ||
-        DISPOSABLE_EMAIL_DOMAINS.includes(
-          domainPart.toLowerCase()
-        )
-      ) {
+      if (nameVal.length < 2) {
         showFieldError(
-          emailField,
-          emailErrorEl,
-          'Please enter a real email address we can reach you on.'
+          nameField,
+          document.getElementById(
+            'err-name'
+          ),
+          'Please enter your full name.'
         );
 
         isValid = false;
       } else {
         clearFieldError(
+          nameField,
+          document.getElementById(
+            'err-name'
+          )
+        );
+      }
+
+
+      // ── Country ────────────────────────────
+      if (
+        !countryField ||
+        !countryField.value
+      ) {
+        showFieldError(
+          countryField,
+          document.getElementById(
+            'err-country'
+          ),
+          'Please select your country.'
+        );
+
+        isValid = false;
+      } else {
+        clearFieldError(
+          countryField,
+          document.getElementById(
+            'err-country'
+          )
+        );
+      }
+
+
+      // ── Phone ──────────────────────────────
+      const phoneValue =
+        phoneField
+          ? phoneField.value
+          : '';
+
+      const digitsOnly =
+        phoneValue.replace(
+          /\D/g,
+          ''
+        );
+
+      const rule =
+        PHONE_RULES[
+          countryField
+            ? countryField.value
+            : ''
+        ] ||
+        PHONE_RULES.other;
+
+      if (
+        digitsOnly.length < rule.min ||
+        digitsOnly.length > rule.max
+      ) {
+        showFieldError(
+          phoneField,
+          document.getElementById(
+            'err-phone'
+          ),
+          `Please enter a valid phone number (${rule.hint}).`
+        );
+
+        isValid = false;
+      } else {
+        clearFieldError(
+          phoneField,
+          document.getElementById(
+            'err-phone'
+          )
+        );
+      }
+
+
+      // ── Email ──────────────────────────────
+      const emailField =
+        document.getElementById(
+          'f-email'
+        );
+
+      const emailVal =
+        emailField
+          ? emailField.value.trim()
+          : '';
+
+      const emailErrorEl =
+        document.getElementById(
+          'err-email'
+        );
+
+      const basicEmailPattern =
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (
+        !basicEmailPattern.test(
+          emailVal
+        )
+      ) {
+        showFieldError(
           emailField,
-          emailErrorEl
+          emailErrorEl,
+          'Please enter a valid email address.'
+        );
+
+        isValid = false;
+      } else {
+        const [
+          localPart,
+          domainPart
+        ] = emailVal.split('@');
+
+        if (
+          FAKE_EMAIL_LOCAL_PARTS.test(
+            localPart
+          ) ||
+          DISPOSABLE_EMAIL_DOMAINS.includes(
+            domainPart.toLowerCase()
+          )
+        ) {
+          showFieldError(
+            emailField,
+            emailErrorEl,
+            'Please enter a real email address we can reach you on.'
+          );
+
+          isValid = false;
+        } else {
+          clearFieldError(
+            emailField,
+            emailErrorEl
+          );
+        }
+      }
+
+
+      // ── Ad spend ───────────────────────────
+      const spendField =
+        document.getElementById(
+          'f-spend'
+        );
+
+      if (
+        !spendField ||
+        !spendField.value
+      ) {
+        showFieldError(
+          spendField,
+          document.getElementById(
+            'err-spend'
+          ),
+          'Please select your current ad spend.'
+        );
+
+        isValid = false;
+      } else {
+        clearFieldError(
+          spendField,
+          document.getElementById(
+            'err-spend'
+          )
         );
       }
-    }
 
 
-    // ── Ad spend ────────────────────────────────
-    const spendField =
-      document.getElementById('f-spend');
+      // ── Creatives ──────────────────────────
+      const creativesField =
+        document.getElementById(
+          'f-creatives'
+        );
 
-    if (!spendField.value) {
-      showFieldError(
-        spendField,
-        document.getElementById('err-spend'),
-        'Please select your current ad spend.'
-      );
+      if (
+        !creativesField ||
+        !creativesField.value
+      ) {
+        showFieldError(
+          creativesField,
+          document.getElementById(
+            'err-creatives'
+          ),
+          'Please select an option.'
+        );
 
-      isValid = false;
-    } else {
-      clearFieldError(
-        spendField,
-        document.getElementById('err-spend')
-      );
-    }
-
-
-    // ── Creatives ───────────────────────────────
-    const creativesField =
-      document.getElementById('f-creatives');
-
-    if (!creativesField.value) {
-      showFieldError(
-        creativesField,
-        document.getElementById('err-creatives'),
-        'Please select an option.'
-      );
-
-      isValid = false;
-    } else {
-      clearFieldError(
-        creativesField,
-        document.getElementById('err-creatives')
-      );
-    }
+        isValid = false;
+      } else {
+        clearFieldError(
+          creativesField,
+          document.getElementById(
+            'err-creatives'
+          )
+        );
+      }
 
 
-    // ── Best time ───────────────────────────────
-    const timeField =
-      document.getElementById('f-time');
+      // ── Best time ──────────────────────────
+      const timeField =
+        document.getElementById(
+          'f-time'
+        );
 
-    if (timeField.value.trim().length < 3) {
-      showFieldError(
-        timeField,
-        document.getElementById('err-time'),
-        'Please let us know the best time to reach you.'
-      );
+      const timeValue =
+        timeField
+          ? timeField.value.trim()
+          : '';
 
-      isValid = false;
-    } else {
-      clearFieldError(
-        timeField,
-        document.getElementById('err-time')
-      );
-    }
+      if (timeValue.length < 3) {
+        showFieldError(
+          timeField,
+          document.getElementById(
+            'err-time'
+          ),
+          'Please let us know the best time to reach you.'
+        );
 
-
-    // ── Stop if validation fails ────────────────
-    if (!isValid) return;
-
-
-    // ── Show confirmation ───────────────────────
-    const bookingHeading =
-      document.getElementById('booking-heading');
-
-    if (bookingHeading) {
-      bookingHeading.style.display = 'none';
-    }
-
-    form.style.display = 'none';
-
-    const thankYouBox =
-      document.getElementById('thank-you-box');
-
-    if (thankYouBox) {
-      thankYouBox.style.display = 'block';
-    }
+        isValid = false;
+      } else {
+        clearFieldError(
+          timeField,
+          document.getElementById(
+            'err-time'
+          )
+        );
+      }
 
 
-    // ── Submit lead to Supabase ─────────────────
-    const websiteField =
-      document.getElementById('f-website');
-
-    const payload = {
-      name: nameVal,
-      country: countryField.value,
-      phone: phoneField.value.trim(),
-      email: emailVal,
-      website: websiteField
-        ? websiteField.value.trim()
-        : '',
-      ad_spend: spendField.value,
-      creatives: creativesField.value,
-      best_time: timeField.value.trim()
-    };
+      // ── Stop if validation fails ───────────
+      if (!isValid) return;
 
 
-    try {
-      const { error } =
-        await supabaseClient
-          .from("Tanvir's Site")
-          .insert([payload]);
+      // ── Show confirmation ──────────────────
+      const bookingHeading =
+        document.getElementById(
+          'booking-heading'
+        );
 
-      if (error) {
+      if (bookingHeading) {
+        bookingHeading.style.display =
+          'none';
+      }
+
+      form.style.display = 'none';
+
+      const thankYouBox =
+        document.getElementById(
+          'thank-you-box'
+        );
+
+      if (thankYouBox) {
+        thankYouBox.style.display =
+          'block';
+      }
+
+
+      // ── Prepare Supabase payload ───────────
+      const websiteField =
+        document.getElementById(
+          'f-website'
+        );
+
+      const payload = {
+        name: nameVal,
+
+        country:
+          countryField.value,
+
+        phone:
+          phoneField.value.trim(),
+
+        email: emailVal,
+
+        website:
+          websiteField
+            ? websiteField.value.trim()
+            : '',
+
+        ad_spend:
+          spendField.value,
+
+        creatives:
+          creativesField.value,
+
+        best_time:
+          timeValue
+      };
+
+
+      // ── Submit to Supabase ────────────────
+      try {
+        const { error } =
+          await supabaseClient
+            .from("Tanvir's Site")
+            .insert([payload]);
+
+        if (error) {
+          console.error(
+            'Supabase error:',
+            error
+          );
+        }
+      } catch (err) {
         console.error(
-          'Supabase error:',
-          error
+          'Supabase submission failed:',
+          err
         );
       }
-    } catch (err) {
-      console.error(
-        'Supabase submission failed:',
-        err
-      );
     }
-  });
+  );
 }
 
 
-// ── Init everything on DOM ready ────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  initNavClicks();
-  initScrollURLUpdate();
-  handleDirectURLVisit();
-  initMobileMenu();
-  initModal();
-  initImageLightbox();
-  initTestimonials();
-  initScrollReveal();
-  initBookNowTriggers();
-  initBookingForm();
-});
+// ── Init everything on DOM ready ───────────────
+document.addEventListener(
+  'DOMContentLoaded',
+  () => {
+    initNavClicks();
+    initScrollURLUpdate();
+    handleDirectURLVisit();
+    initMobileMenu();
+    initModal();
+    initImageLightbox();
+    initTestimonials();
+    initScrollReveal();
+    initBookNowTriggers();
+    initBookingForm();
+  }
+);
